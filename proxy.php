@@ -17,4 +17,5 @@ $referer = $url;
 $curl = curl_init($url);
 curl_setopt($curl, CURLOPT_REFERER, $referer);
 curl_setopt($curl, CURLOPT_USERAGENT, $agent);
+curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Forwarded-For: {$_SERVER['REMOTE_ADDR']}"));
 curl_exec($curl);
