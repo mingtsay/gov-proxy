@@ -12,7 +12,11 @@ if (!preg_match('#gov.tw$#', $url_parts['host'])) {
 }
 
 $agent = "govproxy from http://{$_SERVER['HTTP_HOST']} by IP: {$_SERVER['REMOTE_ADDR']}";
-$referer = $url;
+if (0 === strpos($url, 'http://jirs.judicial.gov.tw/FJUD/PrintFJUD03_0.aspx')) {
+    $referer = 'http://jirs.judicial.gov.tw/FJUD/FJUDQRY03_1.aspx';
+} else {
+    $referer = $url;
+}
 
 $curl = curl_init($url);
 curl_setopt($curl, CURLOPT_REFERER, $referer);
