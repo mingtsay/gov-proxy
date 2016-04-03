@@ -3,9 +3,6 @@
 $url = $_GET['url'];
 $url_parts = parse_url($url);
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
 if (!preg_match('#gov.tw$#', $url_parts['host'])) {
     echo 'proxy *.gov.tw only';
     exit;
@@ -37,6 +34,12 @@ foreach ($allow_cookies as $key) {
         $headers[] = 'Cookie: ' . urlencode($key) . '=' . urlencode($cookies[$key]);
     }
 }
+if (count($allow_cookies)) {
+    header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+} else {
+    header('Access-Control-Allow-Origin: *');
+}
+header('Access-Control-Allow-Methods: GET');
 
 $curl = curl_init($url);
 curl_setopt($curl, CURLOPT_REFERER, $referer);
