@@ -53,6 +53,7 @@ list($header, $body) = explode("\r\n\r\n", $content, 2);
 foreach (explode("\r\n", $header) as $header_line) {
     if (preg_match('#^Set-Cookie: ([^=]*)=(.*)#', $header_line, $matches)) {
         if (in_array($matches[1], $allow_cookies)) {
+            $matches[2] = str_replace('; HttpOnly', '', $matches[2]);
             header("Set-Cookie: {$url_parts['host']}:{$matches[1]}={$matches[2]}");
         }
     }
