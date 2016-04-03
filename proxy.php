@@ -31,7 +31,7 @@ foreach (explode('; ', $_SERVER['HTTP_COOKIE']) as $term) {
 
 foreach ($allow_cookies as $key) {
     if (array_key_exists($url_parts['host'] . ':' . $key, $cookies)) {
-        $headers[] = 'Cookie: ' . urlencode($key) . '=' . urlencode($cookies[$key]);
+        $headers[] = 'Cookie: ' . urlencode($key) . '=' . urlencode($cookies[$url_parts['host'] . ':' . $key]);
     }
 }
 if (count($allow_cookies)) {
