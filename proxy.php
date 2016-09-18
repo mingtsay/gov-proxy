@@ -15,6 +15,13 @@ if (0 === strpos($url, 'http://jirs.judicial.gov.tw/FJUD/PrintFJUD03_0.aspx')) {
     $referer = $url;
 }
 
+$allow_headers = array(
+    'Content-Type',
+    'Expires',
+    'Last-Modified',
+    'Cache-Control',
+);
+
 $allow_cookies = array();
 if ('civil.kcg.gov.tw' == $url_parts['host']) {
     $allow_cookies[] = 'ASP.NET_SessionId';
@@ -49,6 +56,7 @@ curl_setopt($curl, CURLOPT_HEADER, true);
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 $content = curl_exec($curl);
+$info = curl_getinfo($curl);
 list($header, $body) = explode("\r\n\r\n", $content, 2);
 
 if ($_GET['browser_cache']) {
@@ -56,11 +64,20 @@ if ($_GET['browser_cache']) {
 }
 
 foreach (explode("\r\n", $header) as $header_line) {
-    if (preg_match('#^Set-Cookie: ([^=]*)=(.*)#', $header_line, $matches)) {
+    list($header_key, $header_value) = array_map('trim', explode(':', $header_line, 2));
+
+    if ('Set-Cookie' == $header_key) {
+        preg_match('#^Set-Cookie: ([^=]*)=(.*)#', $header_line, $matches);
         if (in_array($matches[1], $allow_cookies)) {
             $matches[2] = str_replace('; HttpOnly', '', $matches[2]);
             header("Set-Cookie: {$url_parts['host']}:{$matches[1]}={$matches[2]}");
         }
+    } elseif (in_array($header_key, $allow_headers)) {
+        header($header_line);
+    } elseif ('Location' == $header_key) {
+        header('Location: proxy.php?url=' . urlencode($header_value));
+    } elseif (strpos($header_key, 'HTTP') === 0) {
+        header($header_line);
     }
 }
 echo $body;
