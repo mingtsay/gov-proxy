@@ -50,6 +50,11 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 $content = curl_exec($curl);
 list($header, $body) = explode("\r\n\r\n", $content, 2);
+
+if ($_GET['browser_cache']) {
+    header('Cache-Control: max-age=' . intval($_GET['browser_cache']));
+}
+
 foreach (explode("\r\n", $header) as $header_line) {
     if (preg_match('#^Set-Cookie: ([^=]*)=(.*)#', $header_line, $matches)) {
         if (in_array($matches[1], $allow_cookies)) {
