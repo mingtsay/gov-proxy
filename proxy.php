@@ -57,7 +57,8 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 // wget http://gca.nat.gov.tw/repository/Certs/GCA.cer
 // openssl x509 -inform der -in GCA.cer -out GCA.crt
 if ($_GET['unsafe']) {
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 }
 curl_setopt($curl, CURLOPT_CAINFO, __DIR__ . '/GRCA2.crt');
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
